@@ -1,7 +1,10 @@
 require 'puppet/provider/package'
 
 Puppet::Type.type(:package).provide(:cask, :parent => Puppet::Provider::Package) do
-  CASK_CUSTOM_ENVIRONMENT = { "HOMEBREW_CACHE" => "/Library/Caches/Homebrew", "HOMEBREW_LOGS" => "/Library/Logs/Homebrew/", "HOMEBREW_NO_EMOJI" => "Yes" }
+  CASK_CUSTOM_ENVIRONMENT = { "HOMEBREW_CACHE" => "/Library/Caches/Homebrew",
+                              "HOMEBREW_LOGS" => "/Library/Logs/Homebrew/",
+                              "HOMEBREW_NO_EMOJI" => "Yes",
+                              "HOME" => "/Users/vagrant"}
   desc "Package management using HomeBrew Cask on OS X"
 
   confine  :operatingsystem => :darwin
@@ -178,7 +181,7 @@ Puppet::Type.type(:package).provide(:cask, :parent => Puppet::Provider::Package)
     end
 
     begin
-      list = execute(brew_list_command).
+      list = execute(brew_list_command, :custom_environment => CASK_CUSTOM_ENVIRONMENT).
         lines.
         map {|line| name_version_split(line) }
     rescue Puppet::ExecutionFailure => detail
